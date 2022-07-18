@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yum.mapper.BoardMapper">
+
+    <sql id="BoardColumns">
+        num
+        , user_num  
+        , title
+        , writer_id
+        , content
+        , hit
+        , wr_date
+        , notice_yn
+        , community_yn
+        , del_yn
+        , img
+  
+    </sql>
+
+    <insert id="insertBoard" parameterType="com.yum.domain.BoardDTO">
+        INSERT into board (
+                <include refid="BoardColumns" />
+                )
+         VALUES 
+        (
+              TMP_SEQ.NEXTVAL
+              
+            , #{userNum}
+            , #{title}
+            , #{writerId}
+            , #{content}
+            , 0
+            , SYSDATE
+            , 'N'
+            , 'N'
+            <!-- 
+            , IFNULL(#{secretYn}, 'N')
+             -->
+            , 'N'
+            , NULL
+            
+
+        )
+    </insert>
+
+    <select id="selectBoardDetail" parameterType="Integer" resultType="com.yum.domain.BoardDTO">
+        SELECT
+            <include refid="BoardColumns" />
+        FROM
+            Board
+        WHERE
+            del_yn = 'N'
+        AND
+            num = #{num}
+    </select>
+
+     <update id="updateBoard" parameterType="com.yum.domain.BoardDTO">
+        UPDATE board
+        SET
+
+              title = #{title}
+            , content = #{content}
+            , writer_id = #{writerId}
+            , notice_yn = 'N'
+            , community_yn = 'N'
+        WHERE
+            user_num = #{userNum}
+    </update>
+    
+
+    <update id="deleteBoard" parameterType="Integer">
+        UPDATE board
+        SET
+              del_yn = 'Y'
+            
+        WHERE
+            num = #{num}
+    </update>
+
+    <select id="selectBoardList" parameterType="com.yum.domain.BoardDTO" resultType="com.yum.domain.BoardDTO">
+        SELECT
+            <include refid="BoardColumns" />
+        FROM
+            board
+        WHERE
+            del_yn = 'N'
+        ORDER BY
+            notice_yn ASC,
+            num DESC,
+            wr_date DESC
+    </select>
+
+    <select id="selectBoardTotalCount" parameterType="com.yum.domain.BoardDTO" resultType="Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            board
+        WHERE
+            del_yn = 'N'
+    </select>
+</mapper>
